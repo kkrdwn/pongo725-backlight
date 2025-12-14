@@ -24,3 +24,7 @@ yay -S --needed clevo-drivers-dkms-git
 ```
 git clone --depth 1 https://github.com/kkrdwn/axioo_pongo725_backlight.git
 ```
+### 4. Give permission script
+```
+chmod +x ./main.py
+```
