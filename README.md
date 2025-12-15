@@ -1,7 +1,7 @@
 #  Controller backlight keyboard for Axioo Pongo 725 linux
 A simple and portable control application for the Axioo Pongo 725 laptop running on Linux distributions such as Arch with Wayland (Hyprland), specifically for managing the RGB backlight keyboard feature.
 
-# Still Prototype
+## Prototype Preview
 <img width="597" height="476" alt="image" src="https://github.com/user-attachments/assets/2aaad82d-cb48-4e28-9532-dcfaeda583fb" />
 
 ## Demo Video
