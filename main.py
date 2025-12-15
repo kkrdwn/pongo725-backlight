@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import gi, os, sys, subprocess
-
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
-print("Keyboard Backlight Control GUI by kkrdwn")
 KBD_PATH = "/sys/devices/platform/tuxedo_keyboard/leds/rgb:kbd_backlight"
 PRESET_COLORS = {
     "RED": (255, 0, 0),
+    "YELLOW": (255, 255, 0),
     "GREEN": (0, 255, 0),
+    "CYAN": (0, 255, 255),
     "BLUE": (0, 0, 255),
     "WHITE": (255, 255, 255),
     "OFF": (0, 0, 0),
@@ -50,7 +50,22 @@ class KeyboardBacklightGUI(Gtk.Window):
         self.selected_rgb = get_current_rgb()
         vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
         self.add(vbox)
-        vbox.pack_start(Gtk.Label(label="RGB Keyboard Backlight Control by kkrdwn"), False, False, 0)
+        label = Gtk.Label(label="RGB Keyboard Backlight Control by kkrdwn")
+        label.set_name("title_label")
+        vbox.pack_start(label, False, False, 0)
+        css = b"""
+        #title_label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        """
+        provider = Gtk.CssProvider()
+        provider.load_from_data(css)
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(),
+            provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_USER,
+        )
         # ===== Preset =====
         preset_frame = Gtk.Frame(label="Preset Colors")
         preset_box = Gtk.Box(spacing=8)
@@ -59,8 +74,21 @@ class KeyboardBacklightGUI(Gtk.Window):
         for name, rgb in PRESET_COLORS.items():
             btn = Gtk.Button(label=name)
             btn.connect("clicked", self.on_preset_clicked, rgb)
+            btn.set_size_request(60, 30)
+            css = f"""
+            #preset_{name} {{
+                background-color: rgb({rgb[0]}, {rgb[1]}, {rgb[2]});
+                color: {'black' if sum(rgb) > 382 else 'white'};
+                font-weight: bold;
+            }}
+            """
+            provider = Gtk.CssProvider()
+            provider.load_from_data(css.encode())
+            btn.set_name(f"preset_{name}")
+            btn.get_style_context().add_provider(
+            provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+            )
             preset_box.pack_start(btn, True, True, 0)
-
         vbox.pack_start(preset_frame, False, False, 0)
 
         # ===== Brightness =====
@@ -92,8 +120,6 @@ class KeyboardBacklightGUI(Gtk.Window):
         for s in (self.r_slider, self.g_slider, self.b_slider):
             s.connect("value-changed", self.on_rgb_changed)
         vbox.pack_start(manual_frame, False, False, 0)
-
-        
 
     # ===== Helpers =====
     def create_slider(self, value, grid, label, row):
@@ -174,7 +200,6 @@ class KeyboardBacklightGUI(Gtk.Window):
         d.run()
         d.destroy()
 
-
 # ===== CLI Mode =====
 def main():
     if len(sys.argv) == 4 and sys.argv[1] == "--set-backlight":
@@ -184,7 +209,6 @@ def main():
             print(err)
             sys.exit(2)
         sys.exit(0)
-
 
 if __name__ == "__main__":
     main()
