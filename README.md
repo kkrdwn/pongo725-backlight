@@ -28,3 +28,7 @@ git clone --depth 1 https://github.com/kkrdwn/axioo_pongo725_backlight.git
 ```
 chmod +x ./main.py
 ```
+### 5. Start app use
+```
+./main.py
+```
